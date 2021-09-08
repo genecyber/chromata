@@ -76,8 +76,10 @@ var _chromata2 = _interopRequireDefault(_chromata);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var imageUrl = 'assets/images/face.jpg';
-var chromata = void 0;
+// const imageUrl = 'assets/images/face.jpg';
+var chromata = void 0,
+    assetIndex = 0,
+    allAssets = void 0;
 
 function doit() {
     var picker = randomIntFromInterval(0, 2);
@@ -100,6 +102,7 @@ function doit() {
         key: randomIntFromInterval(0, 1) == 0 ? 'low' : 'high', // 'low',
         backgroundColor: 'hsla(34, 70%, 70%, 0)'
     });
+
     chromata.start();
 }
 
@@ -116,8 +119,28 @@ function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function getAssets(cb) {
+    var settings = {
+        "url": "https://api.opensea.io/api/v1/assets?owner=" + (getParameterByName("address") || "0xfa69c694e74d67f41dc41063ad8867d458ea3f1a") + "&order_direction=desc&offset=0&limit=50",
+        "method": "GET",
+        "timeout": 0
+    };
+
+    $.ajax(settings).done(function (response) {
+        return cb(response);
+    });
+}
+
 function restart() {
-    $("#image").attr('src', 'https://lh3.googleusercontent.com/ZcpT03zYd2bVTHi4ZECb5qRC06rtUg-L5q3Ee0B8ge7CLOy5_6y82vaVzkycu8nteqlOMx9wyj3zw_ypb2UT9p5LBXR717BskiTrDjs=w600');
+    if (assetIndex == 0) {
+        assetIndex = assetIndex + 1;
+        return setTimeout(function () {
+            restart();
+        }, 1000);
+    }
+    $("#image").attr('src', allAssets[assetIndex].image_url);
+    $("#image2").attr('src', allAssets[assetIndex].image_url);
+    assetIndex = assetIndex + 1;
     setTimeout(function () {
         $("#chromataCanvas").remove();
         setTimeout(function () {
@@ -126,11 +149,28 @@ function restart() {
     }, 1000);
 }
 
+function getParameterByName(name) {
+    var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : window.location.href;
+
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+window.restart = restart;
 window.doit = doit;
-doit();
-setInterval(function () {
+
+getAssets(function (assets) {
+    allAssets = assets.assets;
+    console.log("--------------------------------", assets);
     restart();
-}, 150000);
+});
+// setInterval(() => {
+//     restart()
+// }, 150000)
 
 /***/ }),
 /* 1 */
