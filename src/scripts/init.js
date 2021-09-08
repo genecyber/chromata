@@ -53,6 +53,9 @@ function getAssets(cb) {
 }
 
 function restart() {
+    if (assetIndex == allAssets.length ) {
+        return restart()
+    }
     if (assetIndex == 0 || allAssets[assetIndex].image_url.includes('.mp4')) {
         assetIndex = assetIndex + 1
         return setTimeout(function () {restart()}, 1000)
