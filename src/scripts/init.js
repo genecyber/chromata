@@ -28,7 +28,7 @@ function doit() {
 }
 
 
-document.querySelector('#toggle').addEventListener('click', e => {
+document.querySelector('#image2').addEventListener('click', e => {
     restart()
 });
 

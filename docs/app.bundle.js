@@ -106,7 +106,7 @@ function doit() {
     chromata.start();
 }
 
-document.querySelector('#toggle').addEventListener('click', function (e) {
+document.querySelector('#image2').addEventListener('click', function (e) {
     restart();
 });
 
