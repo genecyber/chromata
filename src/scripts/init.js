@@ -1,7 +1,7 @@
 import Chromata from './chromata';
 
 // const imageUrl = 'assets/images/face.jpg';
-let chromata, assetIndex = 0, allAssets
+let chromata, allAssets
 
 function doit(cb) {
     let picker = randomIntFromInterval(0, 2)
@@ -54,17 +54,18 @@ function getAssets(cb) {
 }
 
 function restart() {
-    if (assetIndex == allAssets.length ) {
-        assetIndex = 0
-        return restart()
-    }
+    let assetIndex = randomIntFromInterval(0, allAssets.length -1)
+    // if (assetIndex == allAssets.length ) {
+    //     assetIndex = 0
+    //     return restart()
+    // }
     if (allAssets[assetIndex].image_url.includes('.mp4')) {
         assetIndex = assetIndex + 1
         return setTimeout(function () {restart()}, 1000)
     }
     $("#image").attr('src', allAssets[assetIndex].image_url || allAssets[assetIndex].collection.featured_image_url || allAssets[assetIndex].collection.image_url )
     $("#image2").attr('src', allAssets[assetIndex].image_url || allAssets[assetIndex].collection.featured_image_url || allAssets[assetIndex].collection.image_url )
-    assetIndex = assetIndex + 1
+    // assetIndex = assetIndex + 1
     setTimeout(() => {
         $("#chromataCanvas").remove()
         setTimeout(() => {

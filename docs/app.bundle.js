@@ -78,7 +78,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // const imageUrl = 'assets/images/face.jpg';
 var chromata = void 0,
-    assetIndex = 0,
     allAssets = void 0;
 
 function doit(cb) {
@@ -133,10 +132,11 @@ function getAssets(cb) {
 }
 
 function restart() {
-    if (assetIndex == allAssets.length) {
-        assetIndex = 0;
-        return restart();
-    }
+    var assetIndex = randomIntFromInterval(0, allAssets.length - 1);
+    // if (assetIndex == allAssets.length ) {
+    //     assetIndex = 0
+    //     return restart()
+    // }
     if (allAssets[assetIndex].image_url.includes('.mp4')) {
         assetIndex = assetIndex + 1;
         return setTimeout(function () {
@@ -145,7 +145,7 @@ function restart() {
     }
     $("#image").attr('src', allAssets[assetIndex].image_url || allAssets[assetIndex].collection.featured_image_url || allAssets[assetIndex].collection.image_url);
     $("#image2").attr('src', allAssets[assetIndex].image_url || allAssets[assetIndex].collection.featured_image_url || allAssets[assetIndex].collection.image_url);
-    assetIndex = assetIndex + 1;
+    // assetIndex = assetIndex + 1
     setTimeout(function () {
         $("#chromataCanvas").remove();
         setTimeout(function () {
