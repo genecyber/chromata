@@ -63,6 +63,9 @@ function restart() {
         assetIndex = assetIndex + 1
         return setTimeout(function () {restart()}, 1000)
     }
+    if (!(allAssets[assetIndex].image_url || allAssets[assetIndex].collection.featured_image_url || allAssets[assetIndex].collection.image_url)) {
+        return restart()
+    }
     $("#image").attr('src', allAssets[assetIndex].image_url || allAssets[assetIndex].collection.featured_image_url || allAssets[assetIndex].collection.image_url )
     $("#image2").attr('src', allAssets[assetIndex].image_url || allAssets[assetIndex].collection.featured_image_url || allAssets[assetIndex].collection.image_url )
     // assetIndex = assetIndex + 1
