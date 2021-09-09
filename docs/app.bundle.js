@@ -81,7 +81,7 @@ var chromata = void 0,
     assetIndex = 0,
     allAssets = void 0;
 
-function doit() {
+function doit(cb) {
     var picker = randomIntFromInterval(0, 2);
 
     var image = document.querySelector('#image'),
@@ -104,6 +104,7 @@ function doit() {
     });
 
     chromata.start();
+    return cb();
 }
 
 document.querySelector('#image2').addEventListener('click', function (e) {
@@ -133,9 +134,10 @@ function getAssets(cb) {
 
 function restart() {
     if (assetIndex == allAssets.length) {
+        assetIndex = 0;
         return restart();
     }
-    if (assetIndex == 0 || allAssets[assetIndex].image_url.includes('.mp4')) {
+    if (allAssets[assetIndex].image_url.includes('.mp4')) {
         assetIndex = assetIndex + 1;
         return setTimeout(function () {
             restart();
@@ -147,9 +149,22 @@ function restart() {
     setTimeout(function () {
         $("#chromataCanvas").remove();
         setTimeout(function () {
-            doit();
-        }, 1000);
-    }, 1000);
+            doit(function () {
+                setTimeout(function () {
+                    resize();
+                }, 500);
+            });
+        }, 50);
+    }, 50);
+}
+
+function resize() {
+    $("#image2").css('max-width', 'unset');
+    $("#image2").width($("#chromataCanvas").width());
+    $("#image2").height($("#chromataCanvas").height());
+    $("#image2").css('position', 'absolute');
+    $("#image2").css('left', $("#chromataCanvas").offset().left);
+    $("#image2").css('top', $("#chromataCanvas").offset().top);
 }
 
 function getParameterByName(name) {

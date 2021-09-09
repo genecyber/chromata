@@ -3,7 +3,7 @@ import Chromata from './chromata';
 // const imageUrl = 'assets/images/face.jpg';
 let chromata, assetIndex = 0, allAssets
 
-function doit() {
+function doit(cb) {
     let picker = randomIntFromInterval(0, 2)
 
     var image = document.querySelector('#image'),
@@ -24,7 +24,8 @@ function doit() {
             backgroundColor: 'hsla(34, 70%, 70%, 0)'
         });
         
-    chromata.start();
+        chromata.start();
+        return cb()
 }
 
 
@@ -54,9 +55,10 @@ function getAssets(cb) {
 
 function restart() {
     if (assetIndex == allAssets.length ) {
+        assetIndex = 0
         return restart()
     }
-    if (assetIndex == 0 || allAssets[assetIndex].image_url.includes('.mp4')) {
+    if (allAssets[assetIndex].image_url.includes('.mp4')) {
         assetIndex = assetIndex + 1
         return setTimeout(function () {restart()}, 1000)
     }
@@ -66,9 +68,22 @@ function restart() {
     setTimeout(() => {
         $("#chromataCanvas").remove()
         setTimeout(() => {
-            doit()
-        }, 1000);
-    }, 1000);
+            doit(()=>{
+                setTimeout(()=>{
+                    resize()
+                }, 500)                
+            })
+        }, 50);
+    }, 50);
+}
+
+function resize() {
+    $("#image2").css('max-width','unset')
+    $("#image2").width($("#chromataCanvas").width())
+    $("#image2").height($("#chromataCanvas").height())
+    $("#image2").css('position','absolute')
+    $("#image2").css('left',$("#chromataCanvas").offset().left)
+    $("#image2").css('top',$("#chromataCanvas").offset().top)
 }
 
 function getParameterByName(name, url = window.location.href) {
