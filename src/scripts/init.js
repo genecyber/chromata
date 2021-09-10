@@ -5,7 +5,14 @@ let chromata, allAssets
 
 function doit(cb) {
     let picker = randomIntFromInterval(0, 2)
-
+    let angle = randomIntFromInterval(1, 6)
+    let origin = randomIntFromInterval(1, 6)
+    let offset = origin == 0 ? ["left"]: 
+                 origin == 1? ["right"]: 
+                 origin == 2? ["top"]: 
+                 origin == 3? ["bottom"]: 
+                 origin == 4? [(randomIntFromInterval(0, 100) + "% " + randomIntFromInterval(0, 100) + "%" )]:
+                 [(randomIntFromInterval(0, 100) + "% " + randomIntFromInterval(0, 100) + "%" ), (randomIntFromInterval(0, 100) + "% " + randomIntFromInterval(0, 100) + "%" )]
     var image = document.querySelector('#image'),
         // chromata;
 
@@ -13,12 +20,18 @@ function doit(cb) {
         chromata = new Chromata(image, {
             pathFinderCount: randomIntFromInterval(1, 300), //300,
             speed: randomIntFromInterval(1, 10), //10,
-            turningAngle: 0.5 + Math.PI,
+            turningAngle: angle == 0 ? 2* Math.PI : 
+                          angle == 1 ? 3* Math.PI/2 : 
+                          angle == 2 ? Math.PI : 
+                          angle == 3 ? Math.PI/2 : 
+                          angle == 4 ? Math.PI/4 : 
+                          angle == 5 ? Math.PI/8 : 
+                          Math.PI/32,
             colorMode: randomIntFromInterval(0, 1) == 0 ? 'color' : 'greyscale', //'color',
             lineWidth: randomIntFromInterval(1, 5),
             lineMode: picker == 0 ? 'smooth' : picker == 1 ? 'point' : 'square',
             compositeOperation: 'lighten',
-            origin: ["50% 0%", "50% 99%"],
+            origin: offset,
             outputSize: 'container', // original, container
             key: randomIntFromInterval(0, 1) == 0 ? 'low' : 'high', // 'low',
             backgroundColor: 'hsla(34, 70%, 70%, 0)'
@@ -33,14 +46,6 @@ document.querySelector('#image2').addEventListener('click', e => {
     restart()
 });
 
-// document.querySelector('#reset').addEventListener('click', e => {
-//     chromata.reset();
-// });
-
-function randomIntFromInterval(min, max) { // min and max included 
-    return Math.floor(Math.random() * (max - min + 1) + min)
-}
-
 function getAssets(cb) {
     var settings = {
         "url": "https://api.opensea.io/api/v1/assets?owner="+(getParameterByName("address") || "0xfa69c694e74d67f41dc41063ad8867d458ea3f1a")+"&order_direction=desc&offset=0&limit=50",
@@ -53,12 +58,14 @@ function getAssets(cb) {
       });
 }
 
+function randomIntFromInterval(min, max) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
 function restart() {
     let assetIndex = randomIntFromInterval(0, allAssets.length -1)
-    // if (assetIndex == allAssets.length ) {
-    //     assetIndex = 0
-    //     return restart()
-    // }
+    let collectionName = allAssets[assetIndex].asset_contract.name
+    let assetName = allAssets[assetIndex].name || collectionName + " #" + allAssets[assetIndex].token_id
     if (allAssets[assetIndex].image_url.includes('.mp4')) {
         assetIndex = assetIndex + 1
         return setTimeout(function () {restart()}, 1000)
@@ -68,20 +75,28 @@ function restart() {
     }
     $("#image").attr('src', allAssets[assetIndex].image_url || allAssets[assetIndex].collection.featured_image_url || allAssets[assetIndex].collection.image_url )
     $("#image2").attr('src', allAssets[assetIndex].image_url || allAssets[assetIndex].collection.featured_image_url || allAssets[assetIndex].collection.image_url )
+    $(".name").text("Name: "+assetName)
+    $(".collection").text("Collection: "+collectionName)
     // assetIndex = assetIndex + 1
     setTimeout(() => {
         $("#chromataCanvas").remove()
+        if ($("#chromataCanvas")) {
+            $("#chromataCanvas").remove()
+        }
         setTimeout(() => {
             doit(()=>{
                 setTimeout(()=>{
                     resize()
-                }, 500)                
+                }, 50)                
             })
         }, 50);
     }, 50);
 }
 
 function resize() {
+    if (!$("#chromataCanvas").offset()) {
+        setTimeout(()=>{resize()}, 500)
+    }
     $("#image2").css('max-width','unset')
     $("#image2").width($("#chromataCanvas").width())
     $("#image2").height($("#chromataCanvas").height())
@@ -101,6 +116,7 @@ function getParameterByName(name, url = window.location.href) {
 
 window.restart = restart
 window.doit = doit
+window.randomIntFromInterval = randomIntFromInterval
 
 getAssets(assets => {
     allAssets = assets.assets
